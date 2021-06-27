@@ -1,0 +1,88 @@
+var options = {
+  host: process.env.DATABASEHOST, 
+  port: process.env.DATABASEPORT,    
+  user: process.env.DATABASEUSER,   
+  password: process.env.DATABASEPASSWORD, 
+  database: process.env.DATABASENAME,
+};
+var db;
+connectToDB = function () {
+  db = mysql.createConnection(options);
+  db.connect(function(err) {
+    if (err) {
+      setTimeout(connectToDB, 2000);
+    }
+  });
+  db.on('error', function(err) {
+    //Error message
+    systemMessage("Error: " + err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      connectToDB();                         // lost due to either server restart, or a
+    } else {                                      // connnection idle timeout (the wait_timeout
+      throw err;                                  // server variable configures this)
+    }
+  });
+
+};
+
+systemMessage = function(message) {
+  console.log("====================================================");
+  console.log("Database is Reconnecting But the app will not crash");
+  console.log("====================================================");
+};
+
+connectToDB();
+console.log("Application is Running");
+
+
+
+
+
+app.post("/formdata", (req, res) => {
+    let stud_name = req.body.stud_name.toString();
+    let stud_dob = req.body.stud_dob.toString();
+    let stud_wp_num = req.body.stud_wp_num.toString();
+    let stud_email = req.body.stud_email.toString();
+    let stud_department = req.body.stud_department.toString();
+    let stud_year = req.body.stud_year.toString();
+    db.query("select stud_email from form_data where stud_email = ?", [stud_email], (err, data) => {
+        if(err){
+            console.log(err);
+        }
+        if(data.length == 0){
+            db.query("insert into form_data (stud_name, stud_dob, stud_wp_num, stud_email, stud_department, stud_year) values (?, ?, ?, ?, ?, ?)",
+            [stud_name,stud_dob,stud_wp_num,stud_email,stud_department,stud_year],
+            (err, data) => {
+                if (err){
+                    console.log(err);
+                }
+                var msg = "Thank You "+stud_name+" for registering for Developer's Hunt 2021 Here is Our Whatsapp group Join It for further Updates "+ wp_link;
+                var mailOptions = {
+                  from: process.env.EMAIL,
+                  to: stud_email,
+                  subject: 'Email From GRCS DEVELOPERS CLUB',
+                  text: msg
+                };
+                transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              });
+              req.session.message = {
+                type: "success",
+                message: 'Thank You '+stud_name+' successfully regestered Please Check your mailbox for Whatsaap group link'
+              }
+              res.redirect("/")
+            });
+        }else {
+            req.session.message = {
+                type: "danger",
+                message: 'Email already exists ! Try with different Email Id'
+              }
+              res.redirect("/")
+        }
+    });
+
+});

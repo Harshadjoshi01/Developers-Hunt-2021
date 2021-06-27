@@ -1,0 +1,50 @@
+<%- include('header'); -%>
+
+
+<% if (message) { %>
+    <div style="text-align: center" class="alert alert-<%= message.type %>">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong>
+        <%= message.message %>
+      </strong>
+    </div>
+<% } %>
+
+
+<h1>Fill the form to get registered for Developers Hunt 2021</h1>
+<form action="/formdata1" method="POST">
+    <label for="name">Full Name </label>
+    <input type="text" name="stud_name" placeholder="Name" required autofocus>
+    <br>
+    <label for="dob">DOB </label>
+    <input type="date" name="stud_dob" placeholder="DOB" required>
+    <br>
+    <label for="wp_no">WhatsApp No. </label>
+    <input type="number" name="stud_wp_num"  min="999999999" max="10000000000"placeholder="WhatsApp Number" required>
+    <br>
+    <label for="email">Email </label>
+    <input type="email" name="stud_email"  placeholder="Email" required>
+    <br>
+    <label for="department">Department </label>
+    <select name="stud_department">
+        <option value="CSE" >CSE</option>
+        <option value="IT">IT</option>
+        <option value="EN & TC">EN & TC</option>
+        <option value="MECH">MECH</option>
+        <option value="CIVIL">CIVIL</option>
+        <option value="AUTOMOBILE">AUTOMOBILE</option>
+      </select>
+    <br>
+    <label for="Year">Department Year </label>
+    <select name="stud_year">
+        <option value="FE">FE</option>
+        <option value="SE">SE</option>
+        <option value="TE">TE</option>
+        <option value="BE">BE</option>
+      </select>
+    <br>
+    <button type="submit">Submit</button>
+</form>
+
+
+<%- include('footer'); -%>
